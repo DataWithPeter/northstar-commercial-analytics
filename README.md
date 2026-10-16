@@ -4,7 +4,9 @@ A four-page Power BI case study exploring a practical question: **is sales growt
 
 Northstar Workplace Supply is a fictional office and facility products distributor. This project uses synthetic transactions, customers, products and targets. The findings demonstrate analytical techniques; they do not represent real client results or business improvements delivered.
 
-**At a glance:** 165,123 posted invoice/credit lines · 1,000 customers · 240 products · 4 regions · 3 channels · 4 report pages · 23 analytical charts.
+The report covers 33 months of synthetic commercial activity, from January 2024 through September 2026, across 165,123 invoice and credit lines, 1,000 customers and 240 products. It opens on September 2026; the Year and Month filters let readers explore the wider history.
+
+**At a glance:** 4 regions · 3 channels · 4 report pages · 23 analytical charts.
 
 **Stack:** Power BI Desktop, Power Query, DAX, Python and synthetic CSV data.
 
