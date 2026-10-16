@@ -8,9 +8,7 @@ Northstar Workplace Supply is a fictional office and facility products distribut
 
 **Stack:** Power BI Desktop, Power Query, DAX, Python and synthetic CSV data.
 
-**Editable project formats:** PBIP is the Power BI project, PBIR stores the report definition, and TMDL stores the semantic model definition.
-
-[Open the interactive Power BI report](https://app.powerbi.com/view?r=eyJrIjoiOWE1NWQwMjUtYzhiNS00YjM4LTgzZGUtZjg2MTRmNGVmMzdkIiwidCI6IjhiYmMwZjRiLTVkNWItNGNiMy05ZWM5LTc1MTc0MjRmMzY0ZiJ9) · [Open the editable project](commercial/NorthstarCommercial.pbip)
+[View the interactive Power BI report](https://app.powerbi.com/view?r=eyJrIjoiOWE1NWQwMjUtYzhiNS00YjM4LTgzZGUtZjg2MTRmNGVmMzdkIiwidCI6IjhiYmMwZjRiLTVkNWItNGNiMy05ZWM5LTc1MTc0MjRmMzY0ZiJ9)
 
 ## Business questions
 
@@ -59,7 +57,7 @@ For example, fictional **Cedar Workplace 0003** has September net sales of **$78
 
 This is an account-review signal, not a churn prediction or a recommendation to stop serving the customer.
 
-The growth and Alder references are recorded in [insights.json](commercial/qa/insights.json); September concentration and Cedar references are in [publication09_reference.json](commercial/qa/publication09_reference.json). Native testing additionally checks the model's calculations and selected visual-query contexts. Displayed chart/card values may be rounded; the amounts above use the underlying values.
+The findings were cross-checked against independent numerical references and native model calculations. Displayed chart/card values may be rounded; the amounts above use the underlying values.
 
 ## Data and model
 
@@ -69,7 +67,7 @@ The growth and Alder references are recorded in [insights.json](commercial/qa/in
 - **FactCommercialLine:** one posted invoice or credit-memo line. There are 159,051 invoice lines and 6,072 credit lines, across 45,613 invoices and 6,065 credit documents. These are posted documents, not a separate sales-order dataset.
 - **FactMonthlyTarget:** one month-start × region × channel plan, with 396 rows. Plans are independently generated assumptions, not a formula derived from actual sales.
 - **SourceDocument:** 51,678 document-level audit records for allocation reconciliation. This CSV is not imported into the semantic model.
-- **Files/model:** 10 CSVs; nine CSV-backed model tables plus a calculated `_Measures` table. The model contains 77 authored measures, including presentation, ranking and eligibility helpers.
+- **Model inputs:** 10 CSVs; nine CSV-backed model tables plus a calculated `_Measures` table. The model contains 77 authored measures, including presentation, ranking and eligibility helpers.
 
 | Imported table | Rows | Purpose |
 |---|---:|---|
@@ -89,23 +87,12 @@ Five dimensions filter transaction lines: Date, Product, Customer, Region and Ch
 
 Power Query reads the CSVs through one required `DataFolder` parameter, with explicit UTF-8 parsing, promoted headers, column types and `en-US` culture. Source money is generated in integer cents and stored to two decimal places; model monetary columns use fixed decimal. The marked date table is used for time analysis, with automatic date/time disabled.
 
-See [MODEL_GUIDE.md](commercial/MODEL_GUIDE.md), [data_dictionary.json](commercial/data_dictionary.json), and the [TMDL model definition](commercial/NorthstarCommercial.SemanticModel/definition).
-
 ## Metric design
 
-```dax
-Net Sales =
-    [Gross Invoice Sales] - [Invoice Discounts] - [Return Credits]
-
-Gross Profit =
-    [Net Sales] - [Net COGS]
-
-Contribution =
-    [Gross Profit] - [Variable Fulfillment Cost]
-
-Contribution Margin =
-    IF([Net Sales] > 0, DIVIDE([Contribution], [Net Sales]))
-```
+- Net sales = gross invoice sales − invoice discounts − return credits
+- Gross profit = net sales − net cost of goods sold
+- Contribution = gross profit − variable fulfillment cost
+- Contribution margin = contribution ÷ net sales, when net sales is positive
 
 Important interpretation choices:
 
@@ -120,27 +107,12 @@ Important interpretation choices:
 ## Explore the report
 
 1. **Start on Commercial overview.** Reset selects September 2026. Set Month to All for the available 2026 year-to-date view. Year, Month and Region are shared controls; general Channel is shared where designed.
-2. **Investigate an account.** Select one bubble in **Account economics | top 40 net sales**. In Desktop edit mode, Ctrl+click **Explore selected account** to open Customer priorities for that account. A category or region selection does not supply the required customer field.
-3. **Investigate a category.** On Profit drivers, select a category bar and Ctrl+click **Explore selected category**. Product investigation has its own Channel control, defaulting to Inside sales after Reset. It does not inherit Profit's incidental Online selection. Its all-channel mix deliberately ignores that local Channel filter and measures gross invoice sales, not net sales.
+2. **Investigate an account.** Select one bubble in **Account economics | top 40 net sales**. Choose **Explore selected account** to open Customer priorities for that account. A category or region selection does not supply the required customer field.
+3. **Investigate a category.** On Profit drivers, select a category bar and choose **Explore selected category**. Product investigation has its own Channel control, defaulting to Inside sales after Reset. It does not inherit Profit's incidental Online selection. Its all-channel mix deliberately ignores that local Channel filter and measures gross invoice sales, not net sales.
 4. **Read period and history together.** Month affects selected-period metrics; the annual-history charts retain the selected year's available reporting months. Shared Year/Month/Region state and the selected entity are intentional parts of the navigation flow.
 5. **Use Back and Reset deliberately.** Back returns to the prior page; it does not reset filters. Reset restores defaults and authored sort order, clears intended entity/local selections, and can affect matching shared slicers on other pages.
 
 If December remains selected when switching from 2025 to 2026, the selected period has no data. Clear Month or use Reset. The report explains the empty period rather than silently substituting another date.
-
-## Open and refresh locally
-
-The tested environment was **Power BI Desktop 2.156.951.0 on Windows**. A compatible Windows Desktop build is required; these are editable project files, not a standalone web dashboard. PBIP stores the report and semantic model as text-based project folders. [Microsoft PBIP documentation](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview)
-
-1. Download/extract or clone this repository into a new folder. Keep `commercial/NorthstarCommercial.pbip`, `NorthstarCommercial.Report` and `NorthstarCommercial.SemanticModel` together.
-2. Open `commercial/NorthstarCommercial.pbip` in Power BI Desktop.
-3. In Power Query's **Manage Parameters**, set `DataFolder` to the actual Windows-visible `commercial/data` folder, for example `C:/Portfolio/Northstar/commercial/data`. Use a valid Windows drive or UNC path in a VM, not a macOS-only path. [Parameter documentation](https://learn.microsoft.com/en-us/power-query/power-query-query-parameters)
-4. Apply the parameter and run **Home → Refresh**. Check the nine imported row counts above. The shipped placeholder is `C:/PowerBI_Portfolio/commercial/data`; it is not automatically relative to the project.
-5. Set **Fit to page**, then verify the default September 2026 anchors: net sales **$1,931,898.41** and contribution **$479,436.27**.
-6. Run the read-only smoke query described below before relying on a newly refreshed or edited copy.
-
-Python/Node are not required merely to open the PBIP. Do not regenerate data over the reviewed copy. The historical data generator belongs in a separate working copy if reproduction is needed.
-
-Local Desktop refresh does not establish scheduled refresh in the Power BI service. Future service refresh requires an accessible source and appropriate gateway/connection setup. [Microsoft refresh documentation](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-data)
 
 ## Validation
 
@@ -158,51 +130,15 @@ Validation separates source arithmetic, native model execution, and observed rep
 
 The independent comparator distinguishes blank from zero, checks exact keys/text/integers, and uses tolerances of $0.000001 for money and 0.000000001 for ratios. Cases include selected customer cohorts, ranking/ties, target guards, sparse/exact/wider dates, leap-day mapping, credits, negative values and empty periods. Expected constants were not changed to make native results pass.
 
-### Repeat the numerical checks
-
-- Open [publication09_native_smoke.dax](commercial/qa/publication09_native_smoke.dax) in DAX Query View and run it. All 68 returned rows must be PASS.
-- For the larger suite, execute one named CASE at a time from [publication09_native_all_measures.dax](commercial/qa/publication09_native_all_measures.dax), then export raw, unrounded results. From the repository root, compare an export using Python 3.10+ (standard library only):
-
-```bash
-python tooling/audit_commercial_publication_09.py --case month_all_2026 --actual export.csv
-```
-
-Use the matching CASE identifier for each export. The comparison tool is read-only: it compares exports with frozen expected values and never rebuilds the reference constants. The query/reference filenames are retained so existing exported cases remain compatible.
-
 ### Validation boundaries
 
 These results apply to the reviewed Desktop build, not every possible filter combination or viewport. The public report opens without sign-in and contains four pages. A bounded anonymous-reader smoke review verified all four published pages, channel changes, product and customer Reset, account drill-through, multi-month KPI changes with annual-history preservation, Enter-key navigation and sampled tooltips. No reproducible defect was found in those checks. This does not certify the public report against an exact source-file hash, mobile layouts, full keyboard accessibility or screen-reader behavior. Performance Analyzer measurements remain outside this review.
 
 ## Repository contents
 
-The repository contains the Commercial project only:
+This repository presents the case-study documentation and four report screenshots. Use the interactive report link above to explore the published report, filters and navigation.
 
-```text
-README.md
-commercial/
-  NorthstarCommercial.pbip
-  NorthstarCommercial.Report/          # PBIR report and static resources
-  NorthstarCommercial.SemanticModel/   # TMDL model and DAX definitions
-  data/                               # 10 synthetic CSVs, including audit source
-  MODEL_GUIDE.md
-  data_dictionary.json
-  metric_definitions.json
-  manifest.json                       # frozen CSV identity and current model count
-  build_commercial.py                  # historical data generator; separate copy only
-  qa/
-    insights.json
-    publication09_native_smoke.dax
-    publication09_native_all_measures.dax
-    publication09_reference.json
-    README.md
-screenshots/                          # report-only September 2026 captures
-requirements.txt
-tooling/
-  audit_commercial_publication_09.py   # read-only comparison tool
-  verify_source.py                    # frozen CSV hash/count validation
-```
-
-Local caches, account metadata, workstation paths and raw execution logs are excluded. The bundled customer/product names, documents and row-level records are fictional, not anonymized real customer data.
+All customer/product names, documents and row-level records represented in the report are fictional, rather than anonymized real customer data.
 
 No repository-wide reuse license is granted. All rights reserved, except where a third-party component has its own applicable terms.
 
@@ -236,6 +172,6 @@ September 2026, all customers, segments, regions and channels: compare account s
 
 ## Synthetic-data generation
 
-AI assistance was used for synthetic-data generation. The delivered CSVs were produced by a reproducible Python generator with fixed seeds, a fixed cutoff and explicit accounting rules, then independently checked. Transaction seed: `20260930`; independent plan seed: `481516`.
+AI assistance was used for synthetic-data generation. The synthetic dataset was produced by a reproducible Python generator with fixed seeds, a fixed cutoff and explicit accounting rules, then independently checked. Transaction seed: `20260930`; independent plan seed: `481516`.
 
 The data intentionally contains differences in product/channel economics, customer concentration, return-credit patterns and account trends to support investigation. These designed patterns are examples, not evidence about real firms or a basis for causal claims.
