@@ -6,7 +6,9 @@ Northstar Workplace Supply is a fictional office and facility products distribut
 
 **At a glance:** 165,123 posted invoice/credit lines · 1,000 customers · 240 products · 4 regions · 3 channels · 4 report pages · 23 analytical charts.
 
-**Stack:** Power BI Desktop, Power Query M, DAX, PBIP/PBIR, TMDL, Python and CSV. SQL Server staging/validation scripts are included as an optional, separately unverified path.
+**Stack:** Power BI Desktop, Power Query, DAX, Python and synthetic CSV data.
+
+**Editable project formats:** PBIP is the Power BI project, PBIR stores the report definition, and TMDL stores the semantic model definition.
 
 [Open the interactive Power BI report](https://app.powerbi.com/view?r=eyJrIjoiOWE1NWQwMjUtYzhiNS00YjM4LTgzZGUtZjg2MTRmNGVmMzdkIiwidCI6IjhiYmMwZjRiLTVkNWItNGNiMy05ZWM5LTc1MTc0MjRmMzY0ZiJ9) · [Open the editable project](commercial/NorthstarCommercial.pbip)
 
@@ -169,7 +171,7 @@ Use the matching CASE identifier for each export. The comparison tool is read-on
 
 ### Validation boundaries
 
-These results apply to the reviewed Desktop build, not every possible filter combination or viewport. The public report opens without sign-in and contains four pages. A bounded anonymous-reader smoke review verified all four published pages, channel changes, product and customer Reset, account drill-through, multi-month KPI changes with annual-history preservation, Enter-key navigation and sampled tooltips. No reproducible defect was found in those checks. This does not certify the public report against an exact source-file hash, mobile layouts, full keyboard accessibility or screen-reader behavior. Performance Analyzer measurements remain outside this review. SQL Server scripts have not been executed on SQL Server.
+These results apply to the reviewed Desktop build, not every possible filter combination or viewport. The public report opens without sign-in and contains four pages. A bounded anonymous-reader smoke review verified all four published pages, channel changes, product and customer Reset, account drill-through, multi-month KPI changes with annual-history preservation, Enter-key navigation and sampled tooltips. No reproducible defect was found in those checks. This does not certify the public report against an exact source-file hash, mobile layouts, full keyboard accessibility or screen-reader behavior. Performance Analyzer measurements remain outside this review.
 
 ## Repository contents
 
@@ -187,7 +189,6 @@ commercial/
   metric_definitions.json
   manifest.json                       # frozen CSV identity and current model count
   build_commercial.py                  # historical data generator; separate copy only
-  sql/                                # optional, unexecuted SQL Server path
   qa/
     insights.json
     publication09_native_smoke.dax
